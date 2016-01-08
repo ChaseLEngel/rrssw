@@ -1,0 +1,6 @@
+groups:
+  group1:
+    rss: https://example.com/rss
+    path: /path/to/group1
+    requests:
+      - group1 E\d+
