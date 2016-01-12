@@ -4,10 +4,10 @@ require 'rss'
 require 'open-uri'
 require 'rest-client'
 
-require_relative './option.rb'
-require_relative './history.rb'
-require_relative './logger.rb'
-require_relative './config.rb'
+require_relative './lib/option.rb'
+require_relative './lib/history.rb'
+require_relative './lib/logger.rb'
+require_relative './lib/config.rb'
 
 def contactFeed
 	search open(@group.rss){|rss| RSS::Parser.parse(rss) }

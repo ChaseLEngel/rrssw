@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'fileutils'
 
-require_relative '../history.rb'
+require_relative '../lib/history.rb'
 
 $filename = "test.sqlite3"
 

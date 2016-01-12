@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 
-require_relative '../config.rb'
+require_relative '../lib/config.rb'
 
 
 class TestConfig < Minitest::Test
