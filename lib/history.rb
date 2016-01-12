@@ -2,8 +2,9 @@ require 'sqlite3'
 
 class History
 
+	# Use existing database or create a new one.
 	def initialize filename
-		file = filename || File.join(__dir__, "rrssw.sqlite3")
+		file = filename || File.join(__dir__, "../rrssw.sqlite3")
 		if File.exists? file
 			@db = SQLite3::Database.new file
 		else
@@ -12,6 +13,9 @@ class History
 		createFunctions
 	end
 
+	# Check if a title is already in database.
+	# request = Title from config, assumed to be a regular expression.
+	# item_title = RSS title, string.
 	def include? request, item_title
 		# Get regular expressions that match request
 		results = @db.execute("SELECT regex(title, '#{request}') FROM history").flatten
@@ -48,6 +52,7 @@ class History
 
 	private
 
+		# Create database schema.
 		def create filename
 			@db = SQLite3::Database.new(filename)
 			@db.execute <<-SQL
@@ -58,6 +63,7 @@ class History
 			SQL
 		end
 
+		# Define custom functions for SQLite3.
 		def createFunctions
 			# Returns the matching expression between given expression and pattern.
 			@db.create_function("regex", 2) do |func, expression, pattern|

@@ -39,7 +39,7 @@ def main
 	@logger = Logger.new options.log
 	config = Config.new options.config 
 	if options.history
-		@history.all_formated
+		puts @history.all_formated
 		exit
 	end
 	config.groups.each do |group|

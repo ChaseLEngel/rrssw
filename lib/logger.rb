@@ -1,7 +1,7 @@
 class Logger
 
 	def initialize filename
-		log_file = filename || File.join(__dir__, "rrssw.log")
+		log_file = filename || File.join(__dir__, "../rrssw.log")
 		@log_file = File.new(log_file, "a")
 	end
 	
