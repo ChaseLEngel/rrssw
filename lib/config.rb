@@ -4,11 +4,13 @@ require 'yaml'
 class Config
 
 	NoConfigFile = Class.new(StandardError)
+
+	attr_reader :file
 	
 	def initialize filename
-		file = filename || File.join(__dir__, "../config.yml")
-		raise NoConfigFile unless File.exists? file
-		@config = YAML.load_file(file)
+		@file = filename || File.join(__dir__, "../config.yml")
+		raise NoConfigFile unless File.exists? @file
+		@config = YAML.load_file(@file)
 	end
 
 	# Returns an array of group objects taken from config file.

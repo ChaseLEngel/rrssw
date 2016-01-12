@@ -35,9 +35,11 @@ end
 
 def main
 	options = Option.parse(ARGV)
-	@history = History.new options.database
 	@logger = Logger.new options.log
+	@history = History.new options.database
+	@logger.info "History loaded:#{@history.file}"
 	config = Config.new options.config 
+	@logger.info "Config loaded:#{config.file}"
 	if options.history
 		puts @history.all_formated
 		exit

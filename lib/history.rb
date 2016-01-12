@@ -2,13 +2,15 @@ require 'sqlite3'
 
 class History
 
+	attr_reader :file
+
 	# Use existing database or create a new one.
 	def initialize filename
-		file = filename || File.join(__dir__, "../rrssw.sqlite3")
-		if File.exists? file
-			@db = SQLite3::Database.new file
+		@file = filename || File.join(__dir__, "../rrssw.sqlite3")
+		if File.exists? @file
+			@db = SQLite3::Database.new @file
 		else
-			create file
+			create @file
 		end
 		createFunctions
 	end
