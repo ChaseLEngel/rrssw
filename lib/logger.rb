@@ -1,22 +1,15 @@
-class Logger
+# Log messages to a file.
+module RRSSWLogger
+  module_function
 
-	def initialize filename
-		log_file = filename || File.join(__dir__, "../rrssw.log")
-		@log_file = File.new(log_file, "a")
-	end
-	
-	def error message
-		@log_file.puts "[#{timestamp}][ERROR] #{message}"
-	end
+  LOG_FILE = File.join(__dir__, '../rrssw.log')
+  LOG_TYPES = %i(debug info error).freeze
 
-	def info message
-		@log_file.puts "[#{timestamp}][INFO] #{message}"
-	end
-
-	private
-
-		def timestamp
-			Time.now.strftime('%b %d %Y %H:%M:%S')
-		end
-
+  def method_missing(type, message, log_file = LOG_FILE)
+    fail NoMethodError, type unless LOG_TYPES.include? type
+    time = Time.now.strftime('%b %d %Y %H:%M:%S')
+    File.open(log_file, 'a') do |f|
+      f.puts "[#{time}][#{type.upcase}] #{message}"
+    end
+  end
 end
