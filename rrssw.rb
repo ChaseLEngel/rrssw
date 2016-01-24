@@ -8,35 +8,43 @@ require_relative './lib/logger.rb'
 require_relative './lib/config.rb'
 require_relative './lib/download.rb'
 
-def contact_feed
+def contact_feed(url)
   @contacted ||= {}
-  @contacted[@group.rss] ||= open(@group.rss) { |r| RSS::Parser.parse(r).items }
-  search @contacted[@group.rss]
+  begin
+    @contacted[url] ||= open(url) { |r| RSS::Parser.parse(r).items }
+  rescue OpenURI::HTTPError
+    RRSSWLogger.error "#{url.inspect} is unreachable"
+    return []
+  end
+  @contacted[url].dup
 end
 
-def search(items)
-  matches = @group.requests.product(items)
-                  .select { |r, i| i.title.match(r) }
-                  .select { |r, i| !@history.include?(r, i.title) }
-  matches.each do |_, i|
-    RRSSWDownload.download i.link, @group.path
-    RRSSWLogger.info "Downloaded file #{item.title}"
-    @history.save item.title
+def search(requests, titles)
+  requests.product(titles)
+          .select { |r, t| t.match(r) }
+          .select { |r, t| !@history.include?(r, t) }
+          .map { |_, t| t }
+end
+
+def download(path, matches)
+  matches.each do |i|
+    puts "Downloaded file: #{i.title.inspect}"
+    RRSSWDownload.download i.link, path
+    RRSSWLogger.info "Downloaded file #{i.title}"
+    @history.save i.title
   end
 end
 
-def main
-  options = Option.parse(ARGV)
-  @history = History.new options.database
-  if options.history
-    @history.all_formated
-    exit
-  end
-  config = Config.new options.config
-  config.groups.each do |group|
-    @group = group
-    contact_feed
-  end
+options = Option.parse(ARGV)
+@history = History.new options.database
+if options.history
+  @history.all_formated
+  exit
 end
-
-main
+config = Config.new options.config
+config.groups.each do |g|
+  items = contact_feed(g.rss)
+  matches = search(g.requests, items.map(&:title))
+  items.keep_if { |i| matches.include? i.title }
+  download(g.path, items)
+end

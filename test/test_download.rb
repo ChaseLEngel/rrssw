@@ -1,6 +1,5 @@
 require 'minitest/autorun'
 require 'fileutils'
-require 'yaml'
 
 require_relative '../lib/download.rb'
 
