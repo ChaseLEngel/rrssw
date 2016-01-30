@@ -9,6 +9,10 @@ class TestRRSSWLogger < Minitest::Test
     @message = 'message'
   end
 
+  def test_setting_debug
+    assert((RRSSWLogger.debug = true))
+  end
+
   def log_regex(type, exp)
     /\A\[\w{3} \d{1,2} \d{4} \d{2}(:\d{2}){2}\]\[#{type.upcase}\] #{@message}\n\z/ =~ exp
   end
@@ -23,6 +27,7 @@ class TestRRSSWLogger < Minitest::Test
   end
 
   def test_debug
+    RRSSWLogger.debug = true
     RRSSWLogger.debug @message, @test_log
     assert log_regex('debug', read_log), "#{read_log.inspect} does not match."
   end

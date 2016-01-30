@@ -12,8 +12,8 @@ def contact_feed(url)
   @contacted ||= {}
   begin
     @contacted[url] ||= open(url) { |r| RSS::Parser.parse(r).items }
-  rescue OpenURI::HTTPError
-    RRSSWLogger.error "#{url.inspect} is unreachable"
+  rescue OpenURI::HTTPError => e
+    RRSSW::Logger.error "#{e} occured while contacting #{url.inspect}"
     return []
   end
   @contacted[url].dup
@@ -28,20 +28,19 @@ end
 
 def download(path, matches)
   matches.each do |i|
-    puts "Downloaded file: #{i.title.inspect}"
-    RRSSWDownload.download i.link, path
-    RRSSWLogger.info "Downloaded file #{i.title}"
+    RRSSW::Download.download i.link, path
+    RRSSW::Logger.info "Downloaded file #{i.title}"
     @history.save i.title
   end
 end
 
 options = Option.parse(ARGV)
-@history = History.new options.database
+@history = RRSSW::History.new options.database
 if options.history
   @history.all_formated
   exit
 end
-config = Config.new options.config
+config = RRSSW::Config.new options.config
 config.groups.each do |g|
   items = contact_feed(g.rss)
   matches = search(g.requests, items.map(&:title))

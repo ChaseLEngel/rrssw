@@ -10,20 +10,20 @@ class TestDownload < Minitest::Test
   end
 
   def test_file_download
-    RRSSWDownload.download @url, __dir__
+    RRSSW::Download.download @url, __dir__
     assert File.exist?(@file), "File didn't get written to disk."
   end
 
   def test_contact_url
     expected = "This is a test file.\n"
-    actual = RRSSWDownload.contact @url
+    actual = RRSSW::Download.contact @url
     assert_equal expected, actual
   end
 
   def test_encode_replaces_brackets
     url = 'https://www.example.com/file[with]brackets'
     expected = 'https://www.example.com/file%255Bwith%255Dbrackets'
-    assert_equal expected, RRSSWDownload.encode(url)
+    assert_equal expected, RRSSW::Download.encode(url)
   end
 
   def teardown
