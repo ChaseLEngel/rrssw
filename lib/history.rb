@@ -27,8 +27,8 @@ module RRSSW
     def include?(request, item_title)
       # Get regular expressions that match request
       @db.execute("SELECT regex(title, '#{request}') FROM history")
-         .flatten
-         .each do |result|
+         .flatten.each do |result|
+           # If the RSS title request substring matches a database result.
            return true if result == item_title.match(request).to_s
          end
       false

@@ -19,11 +19,14 @@ def contact_feed(url)
   @contacted[url].dup
 end
 
+# Takes two arrays and returns matching titles.
 def search(requests, titles)
-  requests.product(titles)
-          .select { |r, t| t.match(r) }
-          .select { |r, t| !@history.include?(r, t) }
-          .map { |_, t| t }
+  matches = {} # Hold request and its matching title.
+  requests.product(titles).each do |r, t|
+    next if matches.key? r # Make sure not to add duplicates.
+    matches[r] = t if t.match(r) && !@history.include?(r, t)
+  end
+  matches.values
 end
 
 def download(path, matches)
@@ -44,6 +47,6 @@ config = RRSSW::Config.new options.config
 config.groups.each do |g|
   items = contact_feed(g.rss)
   matches = search(g.requests, items.map(&:title))
-  items.keep_if { |i| matches.include? i.title }
+  items.keep_if { |i| matches.include? i.title } # Get matches from items
   download(g.path, items)
 end

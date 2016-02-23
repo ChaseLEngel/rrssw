@@ -12,7 +12,11 @@ module RRSSW
     end
 
     def self.contact(url)
-      RestClient.get url
+      begin
+        RestClient.get url
+      rescue RestClient::Exception => e
+        puts "Download failed for #{url}: #{e.response}"
+      end
     end
 
     def self.encode(url)
