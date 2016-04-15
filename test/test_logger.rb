@@ -3,14 +3,14 @@ require 'fileutils'
 
 require_relative '../lib/logger.rb'
 
-class TestRRSSWLogger < Minitest::Test
+class TestSlogger < Minitest::Test
   def setup
     @test_log = File.join(__dir__, 'test.log')
     @message = 'message'
   end
 
   def test_setting_debug
-    assert((RRSSWLogger.debug = true))
+    assert((Slogger.debug = true))
   end
 
   def log_regex(type, exp)
@@ -22,24 +22,24 @@ class TestRRSSWLogger < Minitest::Test
   end
 
   def test_error
-    RRSSWLogger.error @message, @test_log
+    Slogger.error @message, @test_log
     assert log_regex('error', read_log), "#{read_log.inspect} does not match."
   end
 
   def test_debug
-    RRSSWLogger.debug = true
-    RRSSWLogger.debug @message, @test_log
+    Slogger.debug = true
+    Slogger.debug @message, @test_log
     assert log_regex('debug', read_log), "#{read_log.inspect} does not match."
   end
 
   def test_info
-    RRSSWLogger.info @message, @test_log
+    Slogger.info @message, @test_log
     assert log_regex('info', read_log), "#{read_log.inspect} does not match."
   end
 
   def test_with_incorrect_log_type
     assert_raises(NoMethodError) do
-      RRSSWLogger.notatype 'Not a type!.', @test_log
+      Slogger.notatype 'Not a type!.', @test_log
     end
   end
 

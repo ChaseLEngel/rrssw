@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+require 'rss'
+
+require_relative './lib/option.rb'
+require_relative './lib/history.rb'
+require_relative './lib/logger.rb'
+require_relative './lib/config.rb'
+require_relative './lib/download.rb'
+
+# Takes a URL to a RSS feed and returns a RSS object.
+def contact_feed(url)
+  @contacted ||= {}
+  begin
+    @contacted[url] ||= open(url) { |r| RSS::Parser.parse(r).items }
+  rescue OpenURI::HTTPError => e
+    Slogger.instance.error "#{e} occured while contacting #{url.inspect}"
+    return []
+  end
+  @contacted[url].dup
+end
+
+# Matches titles to requests
+# group - OpenStruct of config elements.
+# item - RSS object
+def search(group, items)
+  # puts items.map(&:title).sort
+  # Creates an Array of [String, RSS item] for all combinations.
+  group.requests.product(items).each do |request, item|
+    if item.title.match(request) && !@history.include?(request, item.title)
+      download(group.path, item)
+    end
+  end
+end
+
+# Download file from RSS link to given path.
+# path - String of directory where file will be downloaded.
+# item - RSS item to be downloaded.
+def download(path, item)
+  Download.download item.link, path
+  Slogger.instance.info "Downloaded file #{item.title}"
+  @history.save item.title
+end
+
+options = Option.parse(ARGV)
+
+Slogger.instance.file = options.log if options.log
+Slogger.instance.debug_level = options.debug
+Slogger.instance.verbose = options.verbose
+
+@history = History.new options.database
+if options.history
+  @history.print
+  exit
+end
+
+config = Config.new options.config
+config.groups.each { |group| search(group, contact_feed(group.rss)) }

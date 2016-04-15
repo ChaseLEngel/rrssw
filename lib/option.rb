@@ -18,6 +18,9 @@ module Option
       opts.on(nil, '--debug', 'Run in debug mode.') do |d|
         options[:debug] = d
       end
+      opts.on('-v', '--verbose', 'Write log messages to STDOUT as well as file.') do |v|
+        options[:verbose] = v
+      end
       opts.on('-d', '--database=', 'Specify database file. Default is rrssw.sqlite3') do |d|
         options[:database] = d
       end

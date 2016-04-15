@@ -1,15 +1,41 @@
-module RRSSW
-  # Log messages to a file.
-  class Logger
-    LOG_FILE = File.join(__dir__, '../rrssw.log')
-    LOG_TYPES = %i(debug info error).freeze
+require 'singleton'
 
-    def self.method_missing(type, message, log_file = LOG_FILE)
-      fail NoMethodError, type unless LOG_TYPES.include? type
-      time = Time.now.strftime('%b %d %Y %H:%M:%S')
-      File.open(log_file, 'a') do |f|
-        f.puts "[#{time}][#{type.upcase}] #{message}"
-      end
-    end
+# Log messages to a file.
+class Slogger
+  include Singleton
+  attr_writer :file, :debug_level, :verbose
+
+  def initialize
+    @file ||= 'rrssw.log'
+    @debug_level ||= false
+    @verbose ||= false
+  end
+
+  def info(message)
+    write format_message('INFO', message)
+  end
+
+  def error(message)
+    write format_message('ERROR', message)
+  end
+
+  def warn(message)
+    write format_message('WARN', message)
+  end
+
+  def debug(message)
+    return unless @debug_level
+    write format_message('DEBUG', message)
+  end
+
+  private
+
+  def format_message(type, message)
+    "[#{Time.now}] #{type} - #{message}"
+  end
+
+  def write(message)
+    puts message if @verbose
+    File.open(@file, 'a').puts message
   end
 end
