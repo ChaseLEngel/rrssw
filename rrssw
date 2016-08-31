@@ -7,6 +7,7 @@ require_relative './lib/history.rb'
 require_relative './lib/logger.rb'
 require_relative './lib/config.rb'
 require_relative './lib/download.rb'
+require_relative './lib/notification/notification.rb'
 
 # Takes a URL to a RSS feed and returns a RSS object.
 def contact_feed(url)
@@ -24,11 +25,13 @@ end
 # group - OpenStruct of config elements.
 # item - RSS object
 def search(group, items)
+  # Debug
   # puts items.map(&:title).sort
   # Creates an Array of [String, RSS item] for all combinations.
   group.requests.product(items).each do |request, item|
     if item.title.match(request) && !@history.include?(request, item.title)
       download(group.path, item)
+      Notification.send(item.title)
     end
   end
 end
@@ -55,4 +58,6 @@ if options.history
 end
 
 config = Config.new options.config
+
+Notification.configure config.notification
 config.groups.each { |group| search(group, contact_feed(group.rss)) }

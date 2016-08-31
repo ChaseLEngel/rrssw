@@ -18,6 +18,10 @@ class Config
     @config = YAML.load_file(@file)
   end
 
+  def notification
+    @config['notification']
+  end
+
   # Returns an array of group objects taken from config file.
   def groups
     groups = []
