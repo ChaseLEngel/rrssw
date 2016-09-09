@@ -25,8 +25,6 @@ end
 # group - OpenStruct of config elements.
 # item - RSS object
 def search(group, items)
-  # Debug
-  # puts items.map(&:title).sort
   # Creates an Array of [String, RSS item] for all combinations.
   group.requests.product(items).each do |request, item|
     if item.title.match(request) && !@history.include?(request, item.title)
@@ -60,4 +58,8 @@ end
 config = Config.new options.config
 
 Notification.configure config.notification
-config.groups.each { |group| search(group, contact_feed(group.rss)) }
+config.groups.each do |group| 
+  feed = contact_feed(group.rss)
+  puts feed.map(&:title).sort if options.dump
+  search(group, feed)
+end

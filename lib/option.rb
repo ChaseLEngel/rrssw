@@ -27,6 +27,9 @@ module Option
       opts.on('-l', '--log=', 'Specify log file. Default is rrssw.log') do |l|
         options[:log] = l
       end
+      opts.on(nil, '--dump', 'Dump RSS feed sorted titles (for debug).') do |dump|
+        options[:dump] = dump
+      end
       opts.on('-h', '--help', 'Show this message.') do |help|
         puts opts
         exit
