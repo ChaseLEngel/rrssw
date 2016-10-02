@@ -2,6 +2,7 @@ require 'rss'
 
 require_relative 'download.rb'
 require_relative 'logger.rb'
+require_relative 'feed.rb'
 
 class Rrssw
 
@@ -14,9 +15,10 @@ class Rrssw
   def start
     @groups.each do |group|
       feed = contact_feed(group.rss)
+      items = Feed.parse feed
       # Print sorted feed titles
       puts feed.map(&:title).sort if @options.dump
-      search(group, feed)
+      search(group, items)
     end
   end
 
@@ -35,13 +37,51 @@ class Rrssw
     @contacted[url].dup
   end
 
+  def sizeMatch?(group, item)
+    # Make sure sizes have been set.
+    if group.size.size.nil? && item.size.size.nil?
+      item.size.bytes <= group.size.bytes
+    else
+      true
+    end
+  end
+
+  # Check requirments for group and request with RSS item
+  def match?(group, request, item)
+    item.title.match(request) &&
+    sizeMatch?(group, item) &&
+    !@history.include?(request, item.title)
+  end
+
   # Matches titles to requests
   # group - OpenStruct of config elements.
-  # item - RSS object
+  # item - RSS feed item object
   def search(group, items)
     # Creates an Array of [String, RSS item] for all combinations.
     group.requests.product(items).each do |request, item|
-      if item.title.match(request) && !@history.include?(request, item.title)
+      if match?(group, request, item)
+        download(group.path, item)
+        Notification.send(item.title)
+      end
+    end
+  end
+
+  # Download file from RSS link to given path.
+  # path - String of directory where file will be downloaded.
+  # item - RSS item to be downloaded.
+  def download(path, item)
+    Download.download item.link, path
+    Slogger.instance.info "Downloaded file #{item.title}"
+    @history.save item.title
+  end
+
+  # Matches titles to requests
+  # group - OpenStruct of config elements.
+  # item - RSS feed item object
+  def search(group, items)
+    # Creates an Array of [String, RSS item] for all combinations.
+    group.requests.product(items).each do |request, item|
+      if match?(group, request, item)
         download(group.path, item)
         Notification.send(item.title)
       end

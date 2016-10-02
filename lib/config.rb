@@ -1,7 +1,8 @@
 require 'ostruct'
 require 'yaml'
 
-require_relative './logger.rb'
+require_relative 'logger.rb'
+require_relative 'size'
 
 # Read in config file and parse groups.
 class Config
@@ -28,6 +29,7 @@ class Config
     @config['groups'].each do |k, v|
       groups << OpenStruct.new(
         name: k,
+        size: Size.new(v['size']),
         rss: v['rss'],
         requests: v['requests'],
         path: v['path'])
