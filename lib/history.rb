@@ -35,16 +35,20 @@ class History
     check_cache(request, title)
   end
 
-  def save(title)
+  def save(item)
     timestamp = Time.now.strftime('%b %d %Y %H:%M:%S')
-    @db.execute('INSERT INTO history (title, timestamp) VALUES (?, ?)',
-                title,
+    @db.execute('INSERT INTO history (title, size, timestamp) VALUES (?, ?)',
+                item.title,
+                item.size.formatted,
                 timestamp)
   end
 
   def print
     all.each do |result|
-      puts %(Title: #{result[0]}\nTimestamp: #{result[1]}\n#{'-' * 50})
+      puts "Title: #{result[0]}"
+      puts "Size: #{result[1]}"
+      puts "Timestamp: #{result[2]}"
+      puts '-' * 50
     end
   end
 
@@ -79,6 +83,7 @@ class History
     @db.execute <<-SQL
       create table history (
       title varchar(50),
+      size varchar(50),
       timestamp varchar(10)
       );
     SQL

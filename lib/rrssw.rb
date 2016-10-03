@@ -94,7 +94,7 @@ class Rrssw
   def download(path, item)
     Download.download item.link, path
     Slogger.instance.info "Downloaded file #{item.title}"
-    @history.save item.title
+    @history.save item
   end
 
 end
