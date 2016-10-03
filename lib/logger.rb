@@ -1,7 +1,7 @@
 require 'singleton'
 
 # Log messages to a file.
-class Slogger
+class Logger
   include Singleton
   attr_writer :file, :debug_level, :verbose
 

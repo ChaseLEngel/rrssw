@@ -15,7 +15,7 @@ class Config
     unless File.exist? @file
       fail NoConfigFile, "#{@file} does not exist or is not a file."
     end
-    Slogger.instance.debug "Config loaded:#{@file}"
+    Logger.instance.debug "Config loaded:#{@file}"
     @config = YAML.load_file(@file)
   end
 

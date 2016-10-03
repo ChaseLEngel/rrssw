@@ -10,7 +10,7 @@ class Download
     response = contact url
     file = File.join(dest, File.basename(URI.parse(url).path))
     if File.exist? file
-      Slogger.instance.warn "#{file.inspect} already exists. Overwriting it."
+      Logger.instance.warn "#{file.inspect} already exists. Overwriting it."
     end
     File.open(file, 'w').write response
   end
@@ -19,7 +19,7 @@ class Download
     begin
       RestClient.get url
     rescue RestClient::Exception => e
-      Slogger.instance.error "Download failed for #{url}: #{e.response}"
+      Logger.instance.error "Download failed for #{url}: #{e.response}"
     end
   end
 

@@ -31,7 +31,7 @@ class Rrssw
       # Check if url has already been seen. If not contact it.
       @contacted[url] ||= open(url) { |r| RSS::Parser.parse(r).items }
     rescue OpenURI::HTTPError => e
-      Slogger.instance.error "#{e} occured while contacting #{url.inspect}"
+      Logger.instance.error "#{e} occured while contacting #{url.inspect}"
       return []
     end
     @contacted[url].dup
@@ -71,7 +71,7 @@ class Rrssw
   # item - RSS item to be downloaded.
   def download(path, item)
     Download.download item.link, path
-    Slogger.instance.info "Downloaded file #{item.title}"
+    Logger.instance.info "Downloaded file #{item.title}"
     @history.save item.title
   end
 
@@ -93,7 +93,7 @@ class Rrssw
   # item - RSS item to be downloaded.
   def download(path, item)
     Download.download item.link, path
-    Slogger.instance.info "Downloaded file #{item.title}"
+    Logger.instance.info "Downloaded file #{item.title}"
     @history.save item
   end
 

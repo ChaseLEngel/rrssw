@@ -13,10 +13,10 @@ class History
     @cache = {}
     if File.exist? @file
       @db = SQLite3::Database.new @file
-      Slogger.instance.debug "Found database:#{@file}"
+      Logger.instance.debug "Found database:#{@file}"
     else
       create @file
-      Slogger.instance.debug "Created database:#{@file}"
+      Logger.instance.debug "Created database:#{@file}"
     end
     create_functions
   end
@@ -27,10 +27,10 @@ class History
   def include?(request, title)
     # Try cache first
     if check_cache(request, title)
-      Slogger.instance.debug "Cache hit for #{title}"
+      Logger.instance.debug "Cache hit for #{title}"
       return true
     end
-    Slogger.instance.debug "Cache miss for #{title}"
+    Logger.instance.debug "Cache miss for #{title}"
     find(request)
     check_cache(request, title)
   end
