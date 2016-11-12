@@ -9,9 +9,9 @@ require_relative './lib/notification/notification.rb'
 
 options = Option.parse(ARGV)
 
-Slogger.instance.file = options.log if options.log
-Slogger.instance.debug_level = options.debug
-Slogger.instance.verbose = options.verbose
+Logger.instance.file = options.log if options.log
+Logger.instance.debug_level = options.debug
+Logger.instance.verbose = options.verbose
 
 history = History.new options.database
 if options.history

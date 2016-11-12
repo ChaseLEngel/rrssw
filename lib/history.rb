@@ -37,7 +37,7 @@ class History
 
   def save(item)
     timestamp = Time.now.strftime('%b %d %Y %H:%M:%S')
-    @db.execute('INSERT INTO history (title, size, timestamp) VALUES (?, ?)',
+    @db.execute('INSERT INTO history (title, size, timestamp) VALUES (?, ?, ?)',
                 item.title,
                 item.size.formatted,
                 timestamp)
